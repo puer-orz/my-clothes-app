@@ -1,0 +1,313 @@
+:root {
+  --primary-color: #ff00ff;
+  --secondary-color: #00ffff;
+  --bg-color: #0a0a0a;
+}
+
+/* 基础样式重置 */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: var(--bg-color);
+  color: white;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* 抖音美好体 (Douyin Sans) */
+@font-face {
+  font-family: 'Douyin Sans';
+  src: url('https://lf3-static.bytednsdoc.com/obj/eden-cn/pyth_lzh_lz/ljhwZthlaukjlkulzlp/DouyinSansBold.otf') format('opentype');
+  font-weight: bold;
+  font-style: normal;
+}
+
+.font-douyin {
+  font-family: 'Douyin Sans', sans-serif;
+}
+
+/* 霓虹文字效果 */
+.neon-text {
+  font-family: 'Noto Sans SC', sans-serif; /* 使用圆体字体 */
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-shadow: 
+    0 0 2px rgba(255, 0, 255, 0.2),
+    0 0 5px rgba(255, 0, 255, 0.1); /* 大幅减弱光晕 */
+  animation: neon-pulse 3s infinite alternate; /* 变慢动画 */
+}
+
+@keyframes neon-pulse {
+  from {
+    filter: brightness(1) drop-shadow(0 0 1px var(--primary-color));
+  }
+  to {
+    filter: brightness(1.05) drop-shadow(0 0 3px var(--primary-color)); /* 极微弱的呼吸感 */
+  }
+}
+
+/* Logo 动画 */
+.logo-animation {
+  animation: logo-float 3s ease-in-out infinite;
+  filter: drop-shadow(0 0 15px rgba(255, 0, 255, 0.7));
+}
+
+@keyframes logo-float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* 游戏卡片样式 */
+.game-card {
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.game-card:hover {
+  transform: translateY(-10px) scale(1.02);
+  box-shadow: 0 10px 30px -10px rgba(255, 0, 255, 0.3);
+  border-color: var(--primary-color);
+}
+
+/* 霓虹按钮 */
+.neon-button {
+  box-shadow: 0 0 10px rgba(255, 0, 128, 0.5);
+  position: relative;
+  overflow: hidden;
+}
+
+.neon-button::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(rgba(255,255,255,0.2), transparent, transparent);
+  transform: rotate(45deg);
+  animation: button-shine 3s infinite;
+}
+
+.neon-button-purple {
+  box-shadow: 0 0 10px rgba(128, 0, 255, 0.5);
+}
+
+@keyframes button-shine {
+  0% { transform: translateX(-100%) rotate(45deg); }
+  100% { transform: translateX(100%) rotate(45deg); }
+}
+
+/* 模态框样式 */
+#game-modal {
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+#game-modal:not(.hidden) {
+  display: flex;
+}
+
+.modal-content {
+  background-color: #1a1a2e;
+  border: 1px solid rgba(255, 0, 255, 0.3);
+  box-shadow: 0 0 20px rgba(255, 0, 255, 0.2);
+  max-width: 90vw;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  z-index: 1001;
+  opacity: 1; /* 确保默认可见 */
+  display: block; /* 确保默认显示 */
+}
+
+/* 自定义滚动条 */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0a0a0a; 
+}
+ 
+::-webkit-scrollbar-thumb {
+  background: #333; 
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555; 
+}
+
+/* 游戏特定样式 */
+
+/* 逢7必过数字表 */
+/* 数字高亮样式 */
+.number-highlight {
+  display: flex; /* 改为 flex 布局 */
+  align-items: center; /* 垂直居中 */
+  justify-content: center; /* 水平居中 */
+  width: 100%; /* 占满网格单元 */
+  height: 40px; /* 固定高度确保一致性 */
+  padding: 0; /* 移除内边距，完全靠flex居中 */
+  margin: 0; /* 移除外边距 */
+  border-radius: 0.5rem;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+.number-normal {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: #aaa;
+}
+
+.number-seven {
+  background-color: rgba(255, 0, 128, 0.2);
+  color: #ff0080;
+  border: 1px solid rgba(255, 0, 128, 0.5);
+  box-shadow: 0 0 10px rgba(255, 0, 128, 0.2);
+}
+
+/* 逛三园卡片 */
+.garden-card {
+  background-color: rgba(0, 255, 255, 0.05);
+  border: 1px solid rgba(0, 255, 255, 0.2);
+  border-radius: 0.5rem;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  transition: all 0.3s ease;
+}
+
+.garden-card:hover {
+  background-color: rgba(0, 255, 255, 0.1);
+  border-color: rgba(0, 255, 255, 0.5);
+}
+
+.garden-card.active {
+  background-color: rgba(0, 255, 255, 0.15);
+  border-color: rgba(0, 255, 255, 0.8);
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.2);
+}
+
+/* 扑克牌样式 */
+.card-container {
+  perspective: 1000px;
+}
+
+.card {
+  width: 140px; /* 稍微加宽，更像标准扑克 */
+  height: 200px;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.6s;
+  cursor: pointer;
+}
+
+.card.flipped {
+  transform: rotateY(180deg);
+}
+
+.card-face {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  border-radius: 12px; /* 增加圆角 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem; /* 加大字体 */
+  font-weight: bold;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.5); /* 基础阴影 */
+  border: 1px solid rgba(255, 255, 255, 0.1); /* 微弱边框 */
+}
+
+/* 牌背设计 - 赛博朋克几何风格 */
+.card-front {
+  background: 
+    /* 菱形网格纹理 */
+    linear-gradient(135deg, rgba(255, 0, 255, 0.1) 25%, transparent 25%) -10px 0,
+    linear-gradient(225deg, rgba(255, 0, 255, 0.1) 25%, transparent 25%) -10px 0,
+    linear-gradient(315deg, rgba(255, 0, 255, 0.1) 25%, transparent 25%),
+    linear-gradient(45deg, rgba(255, 0, 255, 0.1) 25%, transparent 25%);
+  background-size: 20px 20px;
+  background-color: #2d1b4e; /* 深紫色底 */
+  
+  /* 边框发光 */
+  box-shadow: 
+    inset 0 0 20px rgba(255, 0, 255, 0.3), /* 内发光 */
+    0 0 10px rgba(255, 0, 255, 0.5); /* 外发光 */
+    
+  /* 中心的装饰图案 */
+  display: flex;
+  flex-direction: column;
+}
+
+/* 牌背中心装饰 */
+.card-front::after {
+  content: '♠♥♣♦';
+  font-size: 24px;
+  color: rgba(255, 0, 255, 0.5);
+  letter-spacing: 5px;
+  text-shadow: 0 0 5px rgba(255, 0, 255, 0.8);
+}
+
+.card-front::before {
+  content: '';
+  position: absolute;
+  width: 80%;
+  height: 80%;
+  border: 2px solid rgba(255, 0, 255, 0.3);
+  border-radius: 8px;
+}
+
+.card-back {
+  background: white; /* 扑克正面通常是白底 */
+  color: black;
+  transform: rotateY(180deg);
+  box-shadow: 0 4px 20px rgba(255, 255, 255, 0.2);
+}
+
+/* 背景动画 */
+.bg-animation {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  background: radial-gradient(circle at 50% 50%, #1a1a2e 0%, #0a0a0a 100%);
+  overflow: hidden;
+}
+
+.bg-animation::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 50px 50px;
+  transform: perspective(500px) rotateX(60deg);
+  transform-origin: center top;
+  animation: grid-move 20s linear infinite;
+}
+
+@keyframes grid-move {
+  0% { transform: perspective(500px) rotateX(60deg) translateY(0); }
+  100% { transform: perspective(500px) rotateX(60deg) translateY(50px); }
+}

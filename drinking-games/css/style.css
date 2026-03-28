@@ -1,0 +1,390 @@
+/* 全局样式变量 */
+:root {
+  --primary-color: #ff00ff;
+  --secondary-color: #00ffff;
+  --accent-color: #ffff00;
+  --bg-color: #0a0a0a;
+  --card-bg: #1a1a2e;
+}
+
+/* 基础样式重置 */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: var(--bg-color);
+  color: white;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* 抖音美好体 (Douyin Sans) */
+@font-face {
+  font-family: 'Douyin Sans';
+  src: url('https://lf1-cdn-tos.bytegoofy.com/obj/goofy/ies/ecom_shared/fonts/DouyinSans-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Douyin Sans';
+  src: url('https://lf1-cdn-tos.bytegoofy.com/obj/goofy/ies/ecom_shared/fonts/DouyinSans-Bold.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
+}
+
+.font-douyin {
+  font-family: 'Douyin Sans', sans-serif;
+}
+
+/* 霓虹文字效果 */
+.neon-text {
+  font-family: 'Noto Sans SC', sans-serif; /* 使用圆体字体 */
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-shadow: 
+    0 0 2px rgba(255, 0, 255, 0.2),
+    0 0 5px rgba(255, 0, 255, 0.1); /* 大幅减弱光晕 */
+  animation: neon-pulse 3s infinite alternate; /* 变慢动画 */
+}
+
+@keyframes neon-pulse {
+  from {
+    filter: brightness(1) drop-shadow(0 0 5px var(--primary-color));
+  }
+  to {
+    filter: brightness(1.2) drop-shadow(0 0 20px var(--primary-color));
+  }
+}
+
+/* Logo 动画 */
+.logo-animation {
+  animation: logo-float 3s ease-in-out infinite;
+  filter: drop-shadow(0 0 15px rgba(255, 0, 255, 0.7));
+}
+
+@keyframes logo-float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* 游戏卡片样式 */
+.game-card {
+  perspective: 1000px;
+  transition: transform 0.3s ease;
+}
+
+.game-card:hover {
+  transform: translateY(-5px);
+}
+
+.game-card .relative {
+  transition: transform 0.6s;
+  transform-style: preserve-3d;
+}
+
+.game-card:hover .relative {
+  transform: rotateX(5deg);
+}
+
+/* 霓虹按钮效果 */
+.neon-button {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 5px var(--primary-color), 0 0 10px var(--primary-color);
+}
+
+.neon-button:hover {
+  box-shadow: 0 0 10px var(--primary-color), 0 0 20px var(--primary-color), 0 0 30px var(--primary-color);
+}
+
+.neon-button::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    to bottom right,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.1) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: rotate(45deg);
+  animation: shine 3s infinite;
+}
+
+@keyframes shine {
+  0% {
+    transform: translateX(-100%) rotate(45deg);
+  }
+  100% {
+    transform: translateX(100%) rotate(45deg);
+  }
+}
+
+/* 蓝色霓虹按钮 */
+.neon-button-blue {
+  box-shadow: 0 0 5px var(--secondary-color), 0 0 10px var(--secondary-color);
+}
+
+.neon-button-blue:hover {
+  box-shadow: 0 0 10px var(--secondary-color), 0 0 20px var(--secondary-color), 0 0 30px var(--secondary-color);
+}
+
+/* 紫色霓虹按钮 */
+.neon-button-purple {
+  box-shadow: 0 0 5px #9900ff, 0 0 10px #9900ff;
+}
+
+.neon-button-purple:hover {
+  box-shadow: 0 0 10px #9900ff, 0 0 20px #9900ff, 0 0 30px #9900ff;
+}
+
+/* 模态框样式 */
+#game-modal {
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+#game-modal:not(.hidden) {
+  display: flex;
+}
+
+.modal-content {
+  background-color: #1a1a2e;
+  border: 1px solid rgba(255, 0, 255, 0.3);
+  box-shadow: 0 0 20px rgba(255, 0, 255, 0.2);
+  max-width: 90vw;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  z-index: 1001;
+  opacity: 1; /* 确保默认可见 */
+  display: block; /* 确保默认显示 */
+}
+
+/* 确保模态框背景正确显示 */
+#game-modal:not(.hidden) {
+  background-color: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(5px);
+}
+
+/* 数字高亮样式 */
+.number-highlight {
+  display: flex; /* 改为 flex 布局 */
+  align-items: center; /* 垂直居中 */
+  justify-content: center; /* 水平居中 */
+  width: 100%; /* 占满网格单元 */
+  height: 40px; /* 固定高度确保一致性 */
+  padding: 0; /* 移除内边距，完全靠flex居中 */
+  margin: 0; /* 移除外边距 */
+  border-radius: 0.5rem;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+.number-normal {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.number-seven {
+  background-color: rgba(255, 0, 255, 0.3);
+  color: white;
+  box-shadow: 0 0 10px rgba(255, 0, 255, 0.5);
+  animation: seven-pulse 1s infinite alternate;
+}
+
+@keyframes seven-pulse {
+  from {
+    transform: scale(1);
+    box-shadow: 0 0 10px rgba(255, 0, 255, 0.5);
+  }
+  to {
+    transform: scale(1.05);
+    box-shadow: 0 0 20px rgba(255, 0, 255, 0.8);
+  }
+}
+
+/* 园子卡片样式 */
+.garden-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.garden-card:hover {
+  transform: translateY(-5px);
+  border-color: rgba(0, 255, 255, 0.5);
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+}
+
+.garden-items {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.5s ease;
+}
+
+.garden-card.active .garden-items {
+  max-height: 500px;
+}
+
+/* 扑克牌样式 */
+.card-container {
+  perspective: 1000px;
+}
+
+.card {
+  width: 140px; /* 稍微加宽，更像标准扑克 */
+  height: 200px;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.6s;
+  cursor: pointer;
+}
+
+.card.flipped {
+  transform: rotateY(180deg);
+}
+
+.card-face {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  border-radius: 12px; /* 增加圆角 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem; /* 加大字体 */
+  font-weight: bold;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.5); /* 基础阴影 */
+  border: 1px solid rgba(255, 255, 255, 0.1); /* 微弱边框 */
+}
+
+/* 牌背设计 - 赛博朋克几何风格 */
+.card-front {
+  background: 
+    /* 菱形网格纹理 */
+    linear-gradient(135deg, rgba(255, 0, 255, 0.1) 25%, transparent 25%) -10px 0,
+    linear-gradient(225deg, rgba(255, 0, 255, 0.1) 25%, transparent 25%) -10px 0,
+    linear-gradient(315deg, rgba(255, 0, 255, 0.1) 25%, transparent 25%),
+    linear-gradient(45deg, rgba(255, 0, 255, 0.1) 25%, transparent 25%);
+  background-size: 20px 20px;
+  background-color: #2d1b4e; /* 深紫色底 */
+  
+  /* 边框发光 */
+  box-shadow: 
+    inset 0 0 20px rgba(255, 0, 255, 0.3), /* 内发光 */
+    0 0 10px rgba(255, 0, 255, 0.5); /* 外发光 */
+    
+  /* 中心的装饰图案 */
+  display: flex;
+  flex-direction: column;
+}
+
+/* 牌背中心装饰 */
+.card-front::after {
+  content: '♠♥♣♦';
+  font-size: 24px;
+  color: rgba(255, 0, 255, 0.5);
+  letter-spacing: 5px;
+  text-shadow: 0 0 5px rgba(255, 0, 255, 0.8);
+}
+
+.card-front::before {
+  content: '';
+  position: absolute;
+  width: 80%;
+  height: 80%;
+  border: 2px solid rgba(255, 0, 255, 0.3);
+  border-radius: 8px;
+}
+
+.card-back {
+  background: white; /* 扑克正面通常是白底 */
+  color: black;
+  transform: rotateY(180deg);
+  box-shadow: 0 4px 20px rgba(255, 255, 255, 0.2);
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .neon-text {
+    font-size: 3rem !important;
+  }
+  
+  .game-card {
+    margin-bottom: 2rem;
+  }
+  
+  .card {
+    width: 100px;
+    height: 150px;
+  }
+}
+
+/* 背景动画效果 */
+.bg-animation {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  overflow: hidden;
+}
+
+.bg-animation::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255,0,255,0.1) 0%, rgba(0,255,255,0.1) 50%, rgba(255,255,0,0.1) 100%);
+  animation: bg-rotate 20s linear infinite;
+}
+
+@keyframes bg-rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* 加载动画 */
+.loading {
+  display: inline-block;
+  width: 50px;
+  height: 50px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: var(--primary-color);
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

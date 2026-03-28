@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>喝了吗 - 酒桌游戏集合</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <!-- GSAP 动画库 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <!-- 扩展数据 -->
+    <script src="js/gardens-data.js"></script>
+    <!-- 自定义样式 -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="bg-gray-900 text-white min-h-screen">
+    <!-- 页面容器 -->
+    <div class="container mx-auto px-4 py-8">
+        <!-- Logo 和标题区域 -->
+        <header class="text-center mb-8">
+            <div class="flex justify-center mb-6">
+                <img src="img/logo.svg" 
+                     alt="喝了吗 Logo" 
+                     class="w-48 h-48 object-contain logo-animation">
+            </div>
+            <h1 class="text-6xl font-bold mb-2 text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 neon-text">
+                喝了吗
+            </h1>
+            <p class="text-xl text-gray-400 mt-4 font-sans tracking-wide" style="font-family: 'Noto Sans SC', sans-serif;">经典酒桌游戏规则全解</p>
+        </header>
+
+        <!-- 游戏卡片区域 -->
+        <main class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- 逢7必过游戏卡片 -->
+            <div class="game-card" data-game="seven-game">
+                <div class="relative overflow-hidden rounded-lg group">
+                    <img src="https://p9-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/833bc8bb881740f1bfe79218b7c7fe10~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=202602051736113B3FDA2C860A7C08F919&rrcfp=f06b921b&x-expires=1772876193&x-signature=VFsoGGh3bbDtowbjI9NiVaD1lBw%3D" 
+                         alt="逢7必过" 
+                         class="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-110">
+                    <div class="absolute inset-0 bg-gradient-to-t from-gray-900 to-transparent opacity-70"></div>
+                    <div class="absolute bottom-0 left-0 right-0 p-6 transform transition-transform duration-300 group-hover:translate-y-0 translate-y-4">
+                        <h3 class="text-2xl font-bold mb-2 text-white">逢7必过</h3>
+                        <p class="text-gray-300 mb-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                            考验反应力的经典游戏，遇到7或7的倍数就喊"过"！
+                        </p>
+                        <button class="px-4 py-2 bg-pink-600 hover:bg-pink-700 text-white rounded-full transition-all duration-300 transform hover:scale-105 neon-button">
+                            开始游戏
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 逛三园游戏卡片 -->
+            <div class="game-card" data-game="three-gardens">
+                <div class="relative overflow-hidden rounded-lg group">
+                    <img src="https://p26-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/55281c2c5b254eb49041974f286a3a73~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=202602051736113B3FDA2C860A7C08F919&rrcfp=f06b921b&x-expires=1772876191&x-signature=YU4K7Honu7Rri0mejXi6zeeJaic%3D" 
+                         alt="逛三园" 
+                         class="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-110">
+                    <div class="absolute inset-0 bg-gradient-to-t from-gray-900 to-transparent opacity-70"></div>
+                    <div class="absolute bottom-0 left-0 right-0 p-6 transform transition-transform duration-300 group-hover:translate-y-0 translate-y-4">
+                        <h3 class="text-2xl font-bold mb-2 text-white">逛三园</h3>
+                        <p class="text-gray-300 mb-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                            考验知识面的分类游戏，看谁能快速说出对应类别的物品！
+                        </p>
+                        <button class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-full transition-all duration-300 transform hover:scale-105 neon-button-blue">
+                            开始游戏
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 小姐牌游戏卡片 -->
+            <div class="game-card" data-game="miss-card">
+                <div class="relative overflow-hidden rounded-lg group">
+                    <img src="https://p26-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/4c319ff434194cc8bb8067c92025bc53~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=202602051736113B3FDA2C860A7C08F919&rrcfp=f06b921b&x-expires=1772876192&x-signature=t%2Bfi2Mqm4FlAr4BVXQgr7vtK3Wo%3D" 
+                         alt="小姐牌" 
+                         class="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-110">
+                    <div class="absolute inset-0 bg-gradient-to-t from-gray-900 to-transparent opacity-70"></div>
+                    <div class="absolute bottom-0 left-0 right-0 p-6 transform transition-transform duration-300 group-hover:translate-y-0 translate-y-4">
+                        <h3 class="text-2xl font-bold mb-2 text-white">小姐牌</h3>
+                        <p class="text-gray-300 mb-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                            经典扑克牌游戏，每张牌都有特殊规则，看谁运气好！
+                        </p>
+                        <button class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-full transition-all duration-300 transform hover:scale-105 neon-button-purple">
+                            开始游戏
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- 页脚 -->
+        <footer class="mt-20 text-center text-gray-500 text-sm">
+            <p>© 2026 喝了吗 - 酒桌游戏集合 | 设计与开发</p>
+            <p class="mt-2">适度饮酒，快乐聚会</p>
+        </footer>
+    </div>
+
+    <!-- 游戏详情模态框 -->
+    <div id="game-modal" class="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center hidden">
+        <div class="modal-content bg-gray-800 rounded-lg w-full max-w-4xl max-h-[90vh] overflow-y-auto relative">
+            <!-- 关闭按钮已移除 -->
+            
+            <!-- 模态框内容 -->
+            <div id="modal-body" class="p-8">
+                <!-- 游戏内容将通过JavaScript动态加载 -->
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="js/script.js"></script>
+</body>
+</html>
