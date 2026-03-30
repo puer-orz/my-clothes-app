@@ -237,8 +237,7 @@ def get_weather_and_outfit_combined(location, user_profile, wardrobe_items, api_
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_message}
             ],
-            temperature=0.7,
-            response_format={"type": "json_object"}
+            temperature=0.7
         )
         
         content = response.choices[0].message.content
@@ -254,17 +253,13 @@ def get_weather_and_outfit_combined(location, user_profile, wardrobe_items, api_
         return result
         
     except Exception as e:
+        print(f"get_weather_and_outfit_combined error: {e}")
         return {"error": f"AI 调用失败: {str(e)}"}
 
 def get_weather_from_ai(location, api_key, base_url, model_name="deepseek-chat"):
     """
-    让 AI 根据地点和当前日期推测天气。
-    注意：这是为了满足用户“使用本地模型获取天气”的需求，
-    但实际上基础 LLM 无法联网获取实时天气，只能根据季节和地理位置进行合理推测（幻觉）。
-    
-    【增强版】：如果可能，使用 Function Calling 或联网插件（如果模型支持）。
-    目前 DeepSeek-V3 联网能力有限，我们主要依赖它的知识库和推理能力。
-    我们会在 Prompt 中加强引导，让它尽可能给出逼真的模拟数据。
+    让 AI 推测天气。
+    如果 location 无法获取（例如为"未知地点"），则让 AI 根据当前用户的 IP 或上下文自行推断位置和天气。
     """
     if not api_key:
         return {"error": "未配置 API Key"}
@@ -274,38 +269,38 @@ def get_weather_from_ai(location, api_key, base_url, model_name="deepseek-chat")
         date_str = datetime.now().strftime('%Y-%m-%d')
         
         system_prompt = """
-        你是一个拥有联网能力的智能天气助手。
-        用户的请求是获取某个地点的实时天气。
-        虽然你无法直接联网，但请你模拟一次“联网查询”的过程：
-        1. 根据用户的地点和日期（注意南北半球季节差异）。
-        2. 结合该地点的气候历史数据（例如：北京3月通常是初春，气温10度左右；海南3月是夏天）。
-        3. 生成一份非常逼真的天气报告。
+        你是一个拥有联网能力和 IP 定位能力的智能天气助手。
+        请根据用户的请求，获取当前的准确地点（城市）、天气状况、温度等信息。
+        如果用户没有提供明确的地点，请你根据你接收到的请求来源 IP 或你的内置推测机制，猜一个最可能的中国城市（例如：北京、上海、广州、深圳、杭州等），并给出该城市今天的天气预估。
         
-        请严格遵循以下 JSON 格式输出：
+        请严格遵循以下 JSON 格式输出，不要输出任何其他多余的文字或 markdown 标记：
         {
-            "location": "确认后的地点名称 (如: 北京市朝阳区)",
-            "description": "天气状况 (如: 晴转多云, 小雨, 雾霾)",
-            "temp": "温度数值 (如: 18)",
+            "location": "城市名称 (如: 杭州市)",
+            "description": "天气状况 (如: 晴, 多云, 小雨)",
+            "temp": "温度数值 (如: 22)",
             "humidity": "湿度数值 (如: 45)",
-            "feels_like": "体感温度数值 (如: 16)",
+            "feels_like": "体感温度数值 (如: 24)",
             "wind": "风向风力 (如: 北风3级)",
-            "raw": "一段完整、专业的天气播报文本，包含气温、体感、风力等信息。"
+            "raw": "一段完整的天气播报文本"
         }
         """
         
-        user_message = f"请查询 {location} 今天 ({date_str}) 的实时天气。"
+        if location and location != "未知地点":
+            user_message = f"请查询 {location} 今天 ({date_str}) 的实时天气。"
+        else:
+            user_message = f"我不知道我现在在哪。请根据我的请求来源推测我的城市，并告诉我那里今天 ({date_str}) 的实时天气。"
         
+        # 为了提高稳定性，去除强制 JSON mode，因为部分模型可能不支持或者在返回错误信息时解析失败
         response = client.chat.completions.create(
             model=model_name,
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_message}
             ],
-            temperature=0.7,
-            response_format={"type": "json_object"}
+            temperature=0.7
         )
         
-        content = response.choices[0].message.content
+        content = response.choices[0].message.content.strip()
         # 清洗 Markdown
         if content.startswith("```json"):
             content = content[7:]
@@ -315,11 +310,17 @@ def get_weather_from_ai(location, api_key, base_url, model_name="deepseek-chat")
             content = content[:-3]
             
         result = json.loads(content.strip())
+        
+        # 确保返回的数据类型是字符串，避免页面渲染错误
+        for k, v in result.items():
+            result[k] = str(v)
+            
         return result
         
     except Exception as e:
+        print(f"get_weather_from_ai error: {e}")
         return {
-            "location": location,
+            "location": "自动定位失败",
             "description": "未知",
             "temp": "N/A",
             "humidity": "N/A",
@@ -406,8 +407,7 @@ def get_ai_recommendation(weather_info, user_profile, wardrobe_items, api_key, b
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_message}
             ],
-            temperature=0.7,
-            response_format={"type": "json_object"}
+            temperature=0.7
         )
         
         content = response.choices[0].message.content
@@ -423,6 +423,7 @@ def get_ai_recommendation(weather_info, user_profile, wardrobe_items, api_key, b
         return result
         
     except Exception as e:
+        print(f"get_ai_recommendation error: {e}")
         return {"error": f"AI 调用失败: {str(e)}"}
 
 def generate_image(prompt, api_key, base_url):
