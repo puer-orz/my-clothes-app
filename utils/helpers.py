@@ -26,26 +26,34 @@ def get_current_location_data():
     """
     client_ip = get_client_ip()
     ip_path = f"/{client_ip}" if client_ip else ""
-    ip_param = f"?ip={client_ip}" if client_ip else ""
 
-    # 方案 1: ipapi.co (备用，通常比 ip-api.com 准，特别是防代理)
+    # 方案 1: 太平洋网络 (国内最准确，且非常稳定)
     try:
-        headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'}
-        url = f'https://ipapi.co{ip_path}/json/'
-        response = requests.get(url, headers=headers, timeout=3)
+        url = f'https://whois.pconline.com.cn/ipJson.jsp?ip={client_ip if client_ip else ""}&json=true'
+        response = requests.get(url, timeout=3)
+        # 接口返回 GBK 编码
+        response.encoding = 'gbk'
         data = response.json()
-        if 'city' in data and data['city']:
+        if data.get('city'):
             return {
-                "city": data['city'],
-                "country": data.get('country_name', 'CN'),
-                "lat": data.get('latitude'),
-                "lon": data.get('longitude'),
-                "display": f"{data['city']}, {data.get('country_name', 'CN')}"
+                "city": data['city'].replace('市', ''),
+                "country": "中国",
+                "lat": None, # 纯文本接口，没有经纬度没关系，Open-Meteo会失败，然后交给AI去推断
+                "lon": None,
+                "display": f"{data.get('pro', '')} {data['city']}"
+            }
+        elif data.get('pro'): # 有时候只有省份
+             return {
+                "city": data['pro'].replace('省', '').replace('市', ''),
+                "country": "中国",
+                "lat": None,
+                "lon": None,
+                "display": data['pro']
             }
     except Exception as e:
-        print(f"ipapi.co fallback: {e}")
-        
-    # 方案 2: ip-api (最快，支持显式传递 IP)
+        print(f"PConline fallback: {e}")
+
+    # 方案 2: ip-api (国际通用，作为备用)
     try:
         url = f'http://ip-api.com/json{ip_path}?lang=zh-CN'
         response = requests.get(url, timeout=3)
@@ -61,22 +69,22 @@ def get_current_location_data():
     except Exception as e:
         print(f"ip-api fallback: {e}")
 
-    # 方案 3: ip.useragentinfo.com (备用 2，纯国内库)
+    # 方案 3: ipapi.co (备用)
     try:
-        url = f'https://ip.useragentinfo.com/json{ip_param}'
-        response = requests.get(url, timeout=3)
+        headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'}
+        url = f'https://ipapi.co{ip_path}/json/'
+        response = requests.get(url, headers=headers, timeout=3)
         data = response.json()
         if 'city' in data and data['city']:
-            city = data['city'].replace('市', '')
             return {
-                "city": city,
-                "country": data.get('country', '中国'),
-                "lat": None,
-                "lon": None,
-                "display": f"{city}, {data.get('country', '中国')}"
+                "city": data['city'],
+                "country": data.get('country_name', 'CN'),
+                "lat": data.get('latitude'),
+                "lon": data.get('longitude'),
+                "display": f"{data['city']}, {data.get('country_name', 'CN')}"
             }
     except Exception as e:
-        print(f"useragentinfo fallback: {e}")
+        print(f"ipapi.co fallback: {e}")
 
     return None
 
