@@ -20,9 +20,20 @@ clothes = [dict(row) for row in get_all_clothes()]
 browser_location = streamlit_js_eval(
     js_expressions="""
     new Promise((resolve, reject) => {
+        if (!navigator.geolocation) {
+            resolve({error: "浏览器不支持地理位置API"});
+            return;
+        }
         navigator.geolocation.getCurrentPosition(
             position => resolve({lat: position.coords.latitude, lon: position.coords.longitude}),
-            error => resolve({error: error.message})
+            error => {
+                let msg = error.message;
+                if (error.code === 1) msg = "用户拒绝了位置权限";
+                else if (error.code === 2) msg = "无法获取位置信息(内部错误)";
+                else if (error.code === 3) msg = "获取位置超时";
+                resolve({error: msg});
+            },
+            { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
         )
     })
     """,
