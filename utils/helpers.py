@@ -2,15 +2,37 @@ import requests
 import json
 import random
 
+def get_client_ip():
+    """尝试从 Streamlit 上下文获取真实客户端 IP"""
+    try:
+        import streamlit as st
+        # 检查是否支持 st.context (Streamlit >= 1.37)
+        if hasattr(st, 'context'):
+            headers = st.context.headers
+            # 尝试常见代理/负载均衡透传的真实 IP 头部
+            for header in ["X-Forwarded-For", "X-Real-Ip", "CF-Connecting-IP"]:
+                ip = headers.get(header)
+                if ip:
+                    # 可能包含多个IP（经过多个代理），取第一个非内网的，通常第一个就是真实客户端IP
+                    return ip.split(',')[0].strip()
+    except Exception as e:
+        print(f"Failed to get client IP from context: {e}")
+    return None
+
 def get_current_location_data():
     """
     通过 IP 获取当前位置的详细信息 (包含经纬度)
     尝试多个免费的 IP 定位 API，提高成功率
     """
+    client_ip = get_client_ip()
+    ip_path = f"/{client_ip}" if client_ip else ""
+    ip_param = f"?ip={client_ip}" if client_ip else ""
+
     # 方案 1: ipapi.co (备用，通常比 ip-api.com 准，特别是防代理)
     try:
-        headers = {'User-Agent': 'Mozilla/5.0'}
-        response = requests.get('https://ipapi.co/json/', headers=headers, timeout=3)
+        headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'}
+        url = f'https://ipapi.co{ip_path}/json/'
+        response = requests.get(url, headers=headers, timeout=3)
         data = response.json()
         if 'city' in data and data['city']:
             return {
@@ -23,9 +45,10 @@ def get_current_location_data():
     except Exception as e:
         print(f"ipapi.co fallback: {e}")
         
-    # 方案 2: ip-api (最快，但可能受代理影响)
+    # 方案 2: ip-api (最快，支持显式传递 IP)
     try:
-        response = requests.get('http://ip-api.com/json/?lang=zh-CN', timeout=3)
+        url = f'http://ip-api.com/json{ip_path}?lang=zh-CN'
+        response = requests.get(url, timeout=3)
         data = response.json()
         if data['status'] == 'success' and data.get('city'):
             return {
@@ -40,14 +63,15 @@ def get_current_location_data():
 
     # 方案 3: ip.useragentinfo.com (备用 2，纯国内库)
     try:
-        response = requests.get('https://ip.useragentinfo.com/json', timeout=3)
+        url = f'https://ip.useragentinfo.com/json{ip_param}'
+        response = requests.get(url, timeout=3)
         data = response.json()
         if 'city' in data and data['city']:
             city = data['city'].replace('市', '')
             return {
                 "city": city,
                 "country": data.get('country', '中国'),
-                "lat": None, # 这个 API 可能不提供经纬度，后续需要经纬度的逻辑需要处理
+                "lat": None,
                 "lon": None,
                 "display": f"{city}, {data.get('country', '中国')}"
             }
