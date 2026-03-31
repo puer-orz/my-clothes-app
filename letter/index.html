@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>一封信</title>
+    <style>
+        :root {
+            --bg-color: #f4ece6;
+            --paper-color: #fdfbf7;
+            --text-color: #333;
+            --line-color: #e4dcd3;
+            --stamp-color: #a83232;
+        }
+
+        body {
+            font-family: 'STKaiti', 'KaiTi', '楷体', serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: var(--text-color);
+            background-image: radial-gradient(var(--line-color) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        /* 密码验证容器样式 */
+        #auth-container {
+            background: white;
+            padding: 2.5rem 2rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            text-align: center;
+            width: 85%;
+            max-width: 320px;
+            transition: all 0.5s ease;
+        }
+
+        .envelope-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #8c7a6b;
+        }
+
+        h2 {
+            margin: 0 0 1.5rem 0;
+            font-size: 1.2rem;
+            color: #555;
+            font-weight: normal;
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        input[type="number"], input[type="password"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #eaeaea;
+            border-radius: 8px;
+            font-size: 16px; /* 调整输入框和占位符字号 */
+            box-sizing: border-box;
+            text-align: center;
+            letter-spacing: 2px;
+            transition: border-color 0.3s;
+            outline: none;
+            /* 隐藏自带的数字调整按钮 */
+            -moz-appearance: textfield;
+        }
+
+        /* 专门针对占位符设置字号，使其比输入的密码文字更小一些 */
+        input::placeholder {
+            font-size: 14px;
+            letter-spacing: normal; /* 占位符不需要额外的字间距 */
+            color: #aaa;
+            transition: color 0.3s ease;
+        }
+
+        /* 输入框获得焦点时，将占位符颜色设置为透明以隐藏它 */
+        input:focus::placeholder {
+            color: transparent;
+        }
+
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        input:focus {
+            border-color: #8c7a6b;
+        }
+
+        .hint {
+            font-size: 0.85rem;
+            color: #888;
+            margin-top: 8px;
+        }
+
+        button {
+            background-color: #8c7a6b;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.3s, transform 0.1s;
+            font-family: inherit;
+        }
+
+        button:hover {
+            background-color: #736356;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        .error {
+            color: #d32f2f;
+            font-size: 0.9rem;
+            margin-top: 10px;
+            display: none;
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            75% { transform: translateX(-5px); }
+        }
+
+        /* 信件容器样式 */
+        #letter-wrapper {
+            display: none;
+            width: 100%;
+            padding: 80px 20px 40px 20px; /* 增加顶部 padding 给音乐图标留出空间 */
+            box-sizing: border-box;
+            animation: fadeIn 1s ease-in-out;
+            position: relative; /* 为绝对定位的子元素提供参考 */
+            max-width: 800px; /* 限制最大宽度，让绝对定位的图标不要离信纸太远 */
+            margin: 0 auto; /* 居中显示 */
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        #letter-container {
+            background-color: var(--paper-color);
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 40px 30px;
+            box-sizing: border-box;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1), 0 15px 35px rgba(0,0,0,0.05);
+            position: relative;
+            
+            /* 信纸横线背景 */
+            background-image: repeating-linear-gradient(transparent, transparent 31px, var(--line-color) 31px, var(--line-color) 32px);
+            background-position: 0 40px; /* 调整横线起始位置 */
+            line-height: 32px;
+            
+            border-radius: 2px;
+        }
+
+        /* 邮票/印章装饰（已隐藏） */
+        .stamp {
+            display: none;
+        }
+
+        /* 信纸左侧红线 */
+        #letter-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 40px;
+            width: 2px;
+            background: rgba(211, 47, 47, 0.3);
+            z-index: 1;
+        }
+
+        .content {
+            position: relative;
+            z-index: 2;
+            padding-left: 30px;
+            font-size: 1.1rem;
+            color: #222;
+            min-height: 60vh;
+        }
+
+        .greeting {
+            margin-top: 0;
+            margin-bottom: 32px; /* 对齐行高 */
+        }
+
+        .body-text {
+            text-indent: 2em;
+            margin-bottom: 32px; /* 对齐行高 */
+            text-align: justify;
+        }
+
+        .signature {
+            text-align: right;
+            margin-top: 64px;
+            margin-bottom: 0;
+        }
+
+        .date {
+            text-align: right;
+            margin-top: 32px;
+            margin-bottom: 0;
+            color: #666;
+        }
+
+        /* 响应式调整 */
+        @media (max-width: 600px) {
+            #letter-wrapper {
+                padding: 70px 10px 20px 10px; /* 移动端也保留顶部空间给音乐图标 */
+            }
+            
+            #letter-container {
+                padding: 30px 15px;
+                background-position: 0 30px;
+            }
+
+            #letter-container::before {
+                left: 20px;
+            }
+
+            .content {
+                padding-left: 15px;
+                font-size: 1rem;
+            }
+            
+            .music-icon {
+                top: 20px;
+                right: 20px;
+            }
+        }
+
+        /* 音乐播放图标动画 */
+        .music-icon {
+            position: absolute;
+            top: 20px;
+            right: 20px; /* 移回右上角 */
+            width: 40px;
+            height: 40px;
+            background-color: #8c7a6b;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            cursor: pointer;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+        }
+        
+        /* 扁平化音乐图标 SVG 样式 */
+        .music-icon svg {
+            width: 18px;
+            height: 18px;
+            fill: white;
+        }
+
+        .music-icon.playing {
+            animation: spin 3s linear infinite;
+        }
+        
+        .music-icon.playing svg {
+            animation: none; /* 防止内部 SVG 跟着旋转出现奇怪的效果，保持整体旋转即可 */
+        }
+        
+        .music-icon.paused {
+            animation-play-state: paused;
+        }
+
+        @keyframes spin {
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 密码验证区域 -->
+    <div id="auth-container">
+        <div class="envelope-icon">✉️</div>
+        <h2>一封信</h2>
+        <div class="input-group">
+            <!-- inputmode="numeric" 可以在移动端呼出数字键盘，pattern限制输入内容 -->
+            <input type="password" id="password" inputmode="numeric" pattern="[0-9]*" placeholder="请输入密码" autocomplete="off">
+            <div class="hint">提示：生日</div>
+        </div>
+        <button onclick="checkPassword()">开启信件</button>
+        <div class="error" id="error-msg">密码错误，请重新输入</div>
+    </div>
+
+    <!-- 信件内容区域 -->
+    <div id="letter-wrapper">
+        <!-- 音乐播放图标 (SVG 扁平化音符) -->
+        <div id="music-btn" class="music-icon" onclick="toggleMusic()">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+            </svg>
+        </div>
+        <div id="letter-container">
+            <div class="content">
+                <div class="greeting">嗨，维维</div>
+                
+                <div class="body-text">
+                    日子过得真快，有时也过得很慢。其实我不清楚你是否仍恨我，你曾说我毁了你的生活，我知道是你无意说出口，但它像一块巨石，时不时想起就会压得我喘不上气。愧疚和遗憾贯穿我现在的生活。
+                </div>
+                
+                <div class="body-text">
+                    这张卡是我加入工作后注册的第一张卡，我存进去了一些钱，密码是之前的门密码，可能无法解决你的困境，但多少会有些缓解。如果你觉得是我自私，那就当作是我自私的行为，通过这种方式弥补我的愧疚感。做这件事会让我好受一点。你接受它也会让我好受一点。不要有负担。
+                </div>
+                
+                <div class="body-text">
+                    我迷茫过，当我知道答案的时候已经来不及写下。我们都会有很多遗憾，有的抱憾终身无能为力，有的可以在合适的节点画上句号。希望我们是后者。
+                </div>
+                
+                <div class="body-text">
+                    这次是专门跑过来，我已经搬到了新的城市，也找到一份还不错的工作。我不会再打扰你，你也无需找我。如果有时间可以回去逛逛芳芯路以前打羽毛球的地方、逛逛洲海路的花园城公园、新江湾城的复旦校园和公园，希望你可以放下憎恨与恐惧，看到更多美好的回忆。
+                </div>
+                
+                <div class="body-text">
+                    我要开始新的生活了，希望你也是。鼓励的话我也不说太多啦，祝你早日走出阴霾。
+                </div>
+                
+                <div class="body-text">
+                    保重。
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 音频播放器 (隐藏) -->
+    <audio id="bgm" src="obj_wonDkMOGw6XDiTHCmMOi_1717907285_4052_a93e_d911_3988c2c4331a6a6c7b24a1f250d27e7e.m4a" preload="auto"></audio>
+
+    <script>
+        // 监听回车键
+        document.getElementById('password').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                checkPassword();
+            }
+        });
+
+        function checkPassword() {
+            const pwdInput = document.getElementById('password').value;
+            const errorMsg = document.getElementById('error-msg');
+            const authContainer = document.getElementById('auth-container');
+            const letterWrapper = document.getElementById('letter-wrapper');
+
+            // 密码校验逻辑
+            if (pwdInput === '0326') {
+                // 密码正确，隐藏验证区，显示信件区
+                authContainer.style.display = 'none';
+                letterWrapper.style.display = 'block';
+                
+                // 尝试播放音频并显示旋转图标
+                const bgm = document.getElementById('bgm');
+                const musicBtn = document.getElementById('music-btn');
+                
+                if (bgm) {
+                    bgm.play().then(() => {
+                        // 播放成功，显示图标并添加旋转动画
+                        musicBtn.style.opacity = '1';
+                        musicBtn.style.pointerEvents = 'auto';
+                        musicBtn.classList.add('playing');
+                    }).catch(error => {
+                        console.log("音频播放失败:", error);
+                        // 即使播放失败，也可以显示图标让用户手动点击播放
+                        musicBtn.style.opacity = '1';
+                        musicBtn.style.pointerEvents = 'auto';
+                    });
+                }
+                
+                // 平滑滚动到顶部
+                window.scrollTo(0, 0);
+                
+                // 为了让body不再居中显示，改变body的样式
+                document.body.style.display = 'block';
+                document.body.style.minHeight = 'auto';
+            } else {
+                // 密码错误，显示错误提示并触发动画
+                errorMsg.style.display = 'block';
+                
+                // 重新触发震动动画
+                authContainer.style.animation = 'none';
+                authContainer.offsetHeight; /* 触发重绘 */
+                authContainer.style.animation = 'shake 0.5s';
+                
+                // 清空输入框
+                document.getElementById('password').value = '';
+            }
+        }
+
+        // 控制音乐播放/暂停
+        function toggleMusic() {
+            const bgm = document.getElementById('bgm');
+            const musicBtn = document.getElementById('music-btn');
+            
+            if (bgm.paused) {
+                bgm.play();
+                musicBtn.classList.remove('paused');
+                musicBtn.classList.add('playing');
+            } else {
+                bgm.pause();
+                musicBtn.classList.add('paused');
+            }
+        }
+    </script>
+</body>
+</html>
